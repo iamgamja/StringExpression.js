@@ -66,6 +66,8 @@ export default class StringExpression {
             parsedArg = results[Number(pointData)];
           } else if (pointType === "$") {
             parsedArg = variables?.get(pointData);
+          } else if (pointType === "S") {
+            parsedArg = arg.slice(1);
           } else {
             parsedArg = arg;
           }

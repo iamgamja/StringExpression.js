@@ -10,6 +10,8 @@ type FunctionData = [name: string, ...params: string[]];
 // @i: ith chunk                       
 // Fi: ith funct                   -ion
 
+// string starts with S
+
 export default function parseStringExpression(str: string, maxLoop: number=1000): ParsedExpression {
   if (str.length === 0) throw Error("Expression length must be 1 or longer.");
 
@@ -34,7 +36,7 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
   try {
     const [replaced, stringValues] = parseQuotes(str);
     str = replaced;
-    values.push(...stringValues);
+    values.push(...stringValues.map(s => `S${s}`));
   } catch (e) {
     throw e;
   }

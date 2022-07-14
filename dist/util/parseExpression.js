@@ -4,6 +4,7 @@ import matchOne from "./matchOne.js";
 // #i: ith value                       
 // @i: ith chunk                       
 // Fi: ith funct                   -ion
+// string starts with S
 export default function parseStringExpression(str, maxLoop = 1000) {
     if (str.length === 0)
         throw Error("Expression length must be 1 or longer.");
@@ -28,7 +29,7 @@ export default function parseStringExpression(str, maxLoop = 1000) {
     try {
         const [replaced, stringValues] = parseQuotes(str);
         str = replaced;
-        values.push(...stringValues);
+        values.push(...stringValues.map(s => `S${s}`));
     }
     catch (e) {
         throw e;
