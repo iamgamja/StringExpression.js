@@ -1,7 +1,7 @@
 type Func = (...args: any[]) => any;
 const funcs: Map<string, [func: Func, argsCount: number]> = new Map();
 function addFunc(name: string, func: Func) {
-  const argsCount = func.constructor.length;
+  const argsCount = 0; // TODO
   funcs.set(name, [func, argsCount]);
 }
 

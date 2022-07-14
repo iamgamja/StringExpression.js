@@ -1,6 +1,6 @@
 const funcs = new Map();
 function addFunc(name, func) {
-    const argsCount = func.constructor.length;
+    const argsCount = 0; // TODO
     funcs.set(name, [func, argsCount]);
 }
 export function getAllFuncName() {
