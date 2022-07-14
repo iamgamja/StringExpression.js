@@ -1,5 +1,5 @@
 {
-  "name": "string-expression",
+  "name": "string-expression-js",
   "version": "1.0.0",
   "type": "module",
   "description": "Evaluate the string! Supports math function, strings.",
