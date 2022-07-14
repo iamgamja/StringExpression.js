@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="./index.js" type="module"></script>
+  <title>StringExpression v2</title>
+</head>
+<body>
+  <div style="background-color: #222; color: #fff;">
+    This is the second version of StringExpression.<br>
+    The StringExpression parses expression from string!<br>
+    $a to get variable that named a
+  </div>
+  <div id="example">
+    <div id="example__function-lookup">*There's no avaiable function...*</div>
+    <input id="example__expression-input" style="width: 100%;" type="text" value="bigint(1 + 1) * bigint(5 * (2 + $t))"></input>
+    <div id="example__expression-output">Invaild expression</div>
+    <hr>
+    <textarea id="example__variable-input" style="width: 100%;" cols="30" rows="10">a=1+5
+b=$a*4
+c=min($a, $b)*8
+d=string(max(5, 8))+"5"
+
+pi=3.14159265358979323846
+x=sqrt(3)
+y=1
+l=sqrt($x*$x + $y*$y)
+deg=atan2($x, $y)/$pi*180
+rotateDeg=30
+xp=cos($deg + $rotateDeg*$pi/180)*$l
+yp=sin($deg + $rotateDeg*$pi/180)*$l</textarea>
+    <div id="example__variable-output">Invaild expression</div>
+  </div>
+</body>
+</html>

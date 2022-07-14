@@ -1,0 +1,16 @@
+{
+  "name": "string-expression",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Evaluate the string! Supports math function, strings.",
+  "main": "./dist/indes.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "js",
+    "expression"
+  ],
+  "author": "spotky1004",
+  "license": "ISC"
+}
