@@ -14,7 +14,7 @@ export default function parseStringExpression(str, maxLoop = 1000) {
             throw Error("This expression is too complex.\nChange StringExpression.MAX_LOOP to higher to parse more complex expression.");
     }
     // Fix -function (-1 * function)
-    const minusFunctionNameRegexp = /(?<!#[A-Za-z/0-9]*)-([A-Za-z/0-9]+)(?=[A-Za-z/0-9]*\()/;
+    const minusFunctionNameRegexp = /(?<!#[A-Za-z0-9]*)-([A-Za-z0-9]+)(?=[A-Za-z0-9]*\()/;
     while (true) {
         const match = matchOne(str, minusFunctionNameRegexp, 1);
         if (typeof match === "undefined")
@@ -32,6 +32,15 @@ export default function parseStringExpression(str, maxLoop = 1000) {
     }
     catch (e) {
         throw e;
+    }
+    // Fix -string (-1 * function)
+    const minusStringRegexp = /(?<!#[0-9]*)-(#[0-9]+)/;
+    while (true) {
+        const match = matchOne(str, minusStringRegexp, 1);
+        if (typeof match === "undefined")
+            break;
+        str = str.replace(minusStringRegexp, `-1*` + match);
+        didLoop();
     }
     // numbers
     const numberRegexp = /(?<!(?:#|[A-Za-z])\d*)-?\d+(\.\d+)?(e\d+)?(?!\d*(?:\(|[A-Za-z]))/;
@@ -64,7 +73,7 @@ export default function parseStringExpression(str, maxLoop = 1000) {
         didLoop();
     }
     // function names
-    const functionNameRegexp = /(?<!#[A-Za-z/0-9]*)[A-Za-z/0-9]+(?=[A-Za-z/0-9]*\()/;
+    const functionNameRegexp = /(?<!#[A-Za-z0-9]*)[A-Za-z0-9]+(?=[A-Za-z0-9]*\()/;
     while (true) {
         const match = matchOne(str, functionNameRegexp);
         if (typeof match === "undefined")
