@@ -47,7 +47,7 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
     didLoop();
   }
   // numbers
-  const numberRegexp = /(?<!(?:#|[A-Za-z])\d*)-?\d+(\.\d+)?(e\d+)?(?!\d*(?:\(|[A-Za-z]))/
+  const numberRegexp = /(?<!(?:\$|#|[A-Za-z])\d*)-?\d+(?:\.\d+)?(?:e\d+)?(?!\d*(?:\(|[A-Za-z]))/
   while (true) {
     const match = matchOne(str, numberRegexp);
     if (typeof match === "undefined") break;
@@ -56,10 +56,10 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
     didLoop();
   }
   // variables
-  const invaildVariableRegexp1 = /\$[0-9][A-Za-z/0-9]*/;
+  const invaildVariableRegexp1 = /\$[0-9][A-Za-z0-9]*/;
   if (invaildVariableRegexp1.test(str)) {
     const match = str.match(invaildVariableRegexp1);
-    throw Error(`Variable name '${match}'is invaild.\nVariable name must starts with alphabet.`);
+    throw Error(`Variable name '${match}' is invaild.\nVariable name must starts with alphabet.`);
   }
   // const invaildVariableRegexp2 = /\$[A-Za-z/0-9]*[^A-Za-z/0-9]+[A-Za-z/0-9]*/;
   // if (invaildVariableRegexp2.test(str)) {
