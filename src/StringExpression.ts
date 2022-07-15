@@ -2,6 +2,7 @@ import parseStringExpression, { ExpressionChunk } from "./util/parseExpression.j
 import * as Funcs from "./data/functions.js";
 import Variables from "./Variables.js";
 
+type VariableType = string | number | string[] | number[] | StringExpression | undefined;
 // const funcNames = Funcs.getAllFuncName();
 const calcFunc = Funcs.calcFunc;
 
@@ -50,14 +51,18 @@ export default class StringExpression {
 
   static MAX_LOOP = 1000;
 
-  eval(args?: (string | number)[], variables?: Variables<any>) {
+  eval(args?: VariableType[], variables?: Variables<any>) {
     if (
       !this.isVaild ||
       typeof this.parsedExpression === "undefined"
     ) throw Error("This expression is invaild.\nCheck this.parseError to see error message.");
 
     if (args) {
-      if (!variables) variables = new Variables("number", "string", "StringExpression");
+      if (!variables) {
+        variables = new Variables("number", "string", "StringExpression");
+      } else {
+        variables = variables.clone();
+      }
       for (let i = 0; i < args.length; i++) {
         const argName = this.argNames[i];
         variables.set(argName, args[i]);
@@ -67,10 +72,10 @@ export default class StringExpression {
     const results: any[] = [];
     for (let i = 0; i < this.parsedExpression.length; i++) {
       const [funcName, ...args] = this.parsedExpression[i];
-      const parsedArgs: (number | string | StringExpression | undefined)[] = [];
+      const parsedArgs: VariableType[] = [];
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
-        let parsedArg: number | string | StringExpression | undefined;
+        let parsedArg: VariableType;
         if (typeof arg === "number") {
           parsedArg = arg;
         } else if (typeof arg === "string") {
@@ -101,6 +106,13 @@ export default class StringExpression {
         const code = variables?.get(funcName.slice(1));
         console.log([...parsedArgs], variables)
         result = code.eval([...parsedArgs], variables);
+      } else if (funcName.startsWith("C")) {
+        if (this.codes) {
+          const code = this.codes[Number(funcName.slice(1))];
+          result = code.eval([...parsedArgs], variables);
+        } else {
+          result.push(undefined);
+        }
       } else {
         // native functions
         result = calcFunc(funcName, ...parsedArgs);

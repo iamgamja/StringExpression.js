@@ -16,17 +16,18 @@
   </div>
   <div id="example">
     <div id="example__function-lookup">*There's no avaiable function...*</div>
-    <input id="example__expression-input" style="width: 100%;" type="text" value="bigint(1 + 1) * bigint(5 * (2 + $t))"></input>
+    <input id="example__expression-input" style="width: 100%;" type="text" value="{(arr) => map($arr, {(v) => $v*10})}(arr(5, 6, 7, 8))"></input>
     <div id="example__expression-output">Invaild expression</div>
     <hr>
-    <textarea id="example__variable-input" style="width: 100%;" cols="30" rows="10">a=1+5
-b=$a*4
-c=min($a, $b)*8
-d=string(max(5, 8))+"5"
+    <textarea id="example__variable-input" style="width: 100%;" cols="30" rows="10">a = 1+5
+b = $a*4
+c = min($a, $b)*8
+d = string(max(5, 8))+"5"
 
 f = {(i) => $i*2}
 g = map(arr(5, 6, 7), $f)
 h = reduce(arr(1, 4, 7), {(a, b) => $a + $b*2}, 0)
+i = {(arr) => map($arr, {(v) => $v*10})}(arr(5, 6, 7, 8))
 
 pi=3.14159265358979323846
 x=sqrt(3)

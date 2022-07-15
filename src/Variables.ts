@@ -35,6 +35,14 @@ export default class Variables<T extends (keyof VariableTypes)[]> {
     return this.vars.entries();
   }
 
+  clone(): Variables<T> {
+    let clone = new Variables(...this.types);
+    for (const [name, value] of this.entries()) {
+      clone.set(name, value);
+    }
+    return clone;
+  }
+
   get size() {
     return this.vars.size;
   }

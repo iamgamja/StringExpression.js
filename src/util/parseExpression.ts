@@ -25,24 +25,28 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
 
   // Parse expression codes
   const codes: ExpressionCode[] = [];
-  const codeRegexp = /{(?: )*\(([A-Za-z][A-Za-z0-9]*(?: )*|(?:[A-Za-z][A-Za-z0-9]*(?: )*,(?: )*)+(?:[A-Za-z][A-Za-z0-9]*(?: )*))?\)(?: )*=>(?: )*([^}]+)(?: )*}/;
+  const codeCheckRegexp = /{(?: )*\(([A-Za-z][A-Za-z0-9]*(?: )*|(?:[A-Za-z][A-Za-z0-9]*(?: )*,(?: )*)+(?:[A-Za-z][A-Za-z0-9]*(?: )*))?\)(?: )*=>(?: )*([^}]+)(?: )*}/;
+  const codeGetRegexp = /^{(?: )*\(([A-Za-z][A-Za-z0-9]*(?: )*|(?:[A-Za-z][A-Za-z0-9]*(?: )*,(?: )*)+(?:[A-Za-z][A-Za-z0-9]*(?: )*))?\)(?: )*=>(?: )*(.+)(?: )*}$/;
   while (true) {
     didLoop();
-    if (str.match(codeRegexp) === null) break;
+    if (str.match(codeCheckRegexp) === null) break;
     let bracketsLevel = 0;
     let beginPos = -1;
     for (let i = 0; i < str.length; i++) {
       const char = str[i];
       if (char === "{") {
-        beginPos = i;
+        if (beginPos === -1) {
+          beginPos = i;
+        }
         bracketsLevel++;
       } else if (char === "}") {
         bracketsLevel--;
         if (bracketsLevel < 0) throw Error(`Invaild brackets pair. (at ${i})`);
         if (bracketsLevel === 0) {
           const codeStr = str.slice(beginPos, i+1);
-          const variableNameStr = matchOne(codeStr, codeRegexp, 1);
-          const expressionStr = matchOne(codeStr, codeRegexp, 2);
+          console.log(codeStr);
+          const variableNameStr = matchOne(codeStr, codeGetRegexp, 1);
+          const expressionStr = matchOne(codeStr, codeGetRegexp, 2);
           if (
             typeof variableNameStr === "undefined" ||
             typeof expressionStr === "undefined"
@@ -56,7 +60,6 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
         }
       }
     }
-    if (bracketsLevel > 0) throw Error("There is one or more unterminated brackets.");
   }
 
   // Fix -function (-1 * function)
