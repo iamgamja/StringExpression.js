@@ -89,7 +89,7 @@ export default function parseStringExpression(str, maxLoop = 1000) {
         const match = matchOne(str, numberRegexp);
         if (typeof match === "undefined")
             break;
-        str = str.replace(numberRegexp, `#${values.length}`);
+        str = str.replace(numberRegexp, (match.startsWith("-") ? "+" : "") + `#${values.length}`);
         values.push(Number(match));
         didLoop();
     }
@@ -218,6 +218,7 @@ export default function parseStringExpression(str, maxLoop = 1000) {
     const operatorRegexps = operatorPriorities.map(ops => new RegExp(`((?:#|@|F|C)\\d+)(${ops.map(op => "\\" + op).join("|")})((?:#|@|F|C)\\d+)`));
     const parseEndRegexp = /^@\d+$/;
     const invaildTestRegexp3 = new RegExp(`(?:${operatorPriorities.flat().map(op => `\\${op}`).join("|")})$`);
+    console.log(str);
     parseExpression(str);
     function parseExpression(str) {
         if (invaildTestRegexp3.test(str))
