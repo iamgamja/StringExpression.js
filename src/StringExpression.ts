@@ -57,12 +57,9 @@ export default class StringExpression {
       typeof this.parsedExpression === "undefined"
     ) throw Error("This expression is invaild.\nCheck this.parseError to see error message.");
 
+    if (!variables) variables = new Variables("number", "string", "StringExpression");
     if (args) {
-      if (!variables) {
-        variables = new Variables("number", "string", "StringExpression");
-      } else {
-        variables = variables.clone();
-      }
+      variables = variables.clone();
       for (let i = 0; i < args.length; i++) {
         const argName = this.argNames[i];
         variables.set(argName, args[i]);
@@ -104,9 +101,9 @@ export default class StringExpression {
       if (funcName.startsWith("$")) {
         // code
         const code = variables?.get(funcName.slice(1));
-        console.log([...parsedArgs], variables)
         result = code.eval([...parsedArgs], variables);
       } else if (funcName.startsWith("C")) {
+        // anonymous function
         if (this.codes) {
           const code = this.codes[Number(funcName.slice(1))];
           result = code.eval([...parsedArgs], variables);
@@ -115,7 +112,7 @@ export default class StringExpression {
         }
       } else {
         // native functions
-        result = calcFunc(funcName, ...parsedArgs);
+        result = calcFunc(funcName, variables, ...parsedArgs);
       }
       results.push(result);
     }

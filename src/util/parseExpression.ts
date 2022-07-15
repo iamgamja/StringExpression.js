@@ -44,7 +44,6 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
         if (bracketsLevel < 0) throw Error(`Invaild brackets pair. (at ${i})`);
         if (bracketsLevel === 0) {
           const codeStr = str.slice(beginPos, i+1);
-          console.log(codeStr);
           const variableNameStr = matchOne(codeStr, codeGetRegexp, 1);
           const expressionStr = matchOne(codeStr, codeGetRegexp, 2);
           if (

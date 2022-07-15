@@ -1,7 +1,8 @@
 import type StringExpression from "../StringExpression.js";
+import type Variables from "../Variables.js";
 
 // type AvaiableTypes = number | string | number[] | string[];
-type Func = (...args: any[]) => any;
+type Func = (this: Variables<any>, ...args: any[]) => any;
 const funcs: Map<string, [func: Func, argsCount: number]> = new Map();
 function addFunc(name: string, func: Func) {
   const argsCount = 0; // TODO
@@ -17,12 +18,12 @@ export function getFuncArgsCount(name: string) {
   const [, argsCount] = funcData;
   return argsCount;
 }
-export function calcFunc(name: string, ...args: any[]) {
+export function calcFunc(name: string, variables: Variables<any>, ...args: any[]) {
   const funcData = funcs.get(name);
   if (!funcData) throw Error("This function does not exist.");
   const [func, argsCount] = funcData;
   if (argsCount > args.length) throw Error(`This function recives minimum of ${argsCount} arguments.\n But recived ${args.length}.`);
-  return func(...args);
+  return func.call(variables, ...args);
 }
 
 // important functions
@@ -67,18 +68,29 @@ addFunc("lt", (a, b) => a < b);
 addFunc("gte", (a, b) => a >= b);
 addFunc("lte", (a, b) => a <= b);
 // bool
-addFunc("and", (a, b) => a && b);
-addFunc("or", (a, b) => a || b);
+addFunc("and", (...v) => v.every(v => v == true));
+addFunc("or", (...v) => !!v.find(v => v == true));
 addFunc("not", (a) => !a);
 // if
 addFunc("if", (s, a) => s ? a : undefined);
 addFunc("ifelse", (s, a, b) => s ? a : b);
+addFunc("fif", function (s, a: StringExpression) {
+  return s ? a.eval([], this) : undefined;
+});
+addFunc("fifelse", function (s, a: StringExpression, b: StringExpression) {
+  return s ? a.eval([], this) : b.eval([], this);
+});
 // array
 addFunc("arr", (...args) => args);
-addFunc("arrget", (arr, i) => typeof arr !== "undefined" || arr !== null ? arr[i] : undefined);
-addFunc("arrset", (arr, i, value) => typeof arr !== "undefined" || arr !== null ? arr[i] = value : undefined);
-addFunc("map", (arr: any[], callback: StringExpression) => arr.map((v, i) => callback.eval([v, i])));
-addFunc("reduce", (arr: any[], callback: StringExpression, initialValue: any) => arr.reduce((a, b, i) => callback.eval([a, b, i]), initialValue));
+addFunc("arrget", (arr, i) => Array.isArray(arr) ? arr[i] : undefined);
+addFunc("arrset", (arr, i, value) => Array.isArray(arr) ? (arr[i] = value) : undefined);
+addFunc("len", (arr) => arr.length);
+addFunc("map", function (arr: any[], callback: StringExpression) {
+  return arr.map((v, i) => callback.eval([v, i], this));
+});
+addFunc("reduce", function (arr: any[], callback: StringExpression, initialValue: any) {
+  return arr.reduce((a, b, i) => callback.eval([a, b, i], this), initialValue)
+});
 // string
 addFunc("strtoarr", (str) => str.split(""));
 addFunc("arrtostr", (arr) => Array.isArray(arr) ? arr.join("") : "")
