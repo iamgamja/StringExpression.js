@@ -19,24 +19,20 @@
     <input id="example__expression-input" style="width: 100%;" type="text" value="{(arr) => map($arr, {(v) => $v*10})}(arr(5, 6, 7, 8))"></input>
     <div id="example__expression-output">Invaild expression</div>
     <hr>
-    <textarea id="example__variable-input" style="width: 100%;" cols="30" rows="10">a = 1+5
-b = $a*4
-c = min($a, $b)*8
-d = string(max(5, 8))+"5"
+    <textarea id="example__variable-input" style="width: 100%;" cols="30" rows="10">behaves="156"
 
-f = {(i) => $i*2}
-g = map(arr(5, 6, 7), $f)
-h = reduce(arr(1, 4, 7), {(a, b) => $a + $b*2}, 0)
-i = {(arr) => map($arr, {(v) => $v*10})}(arr(5, 6, 7, 8))
+data = arr(-1, -1, -1, -1, -1, -1, -1, -1, -1)
+behaveCount = ifelse(0, map(strtoarr($behaves), {(b, i) => fif(eq(arrget($data, $b-1), -1), {(a) => arrset($data, $b-1, $i%2)})}), len($behaves))
+boardData = arr(arr(arrget($data, 0), arrget($data, 1), arrget($data, 2)), arr(arrget($data, 3), arrget($data, 4), arrget($data, 5)), arr(arrget($data, 6), arrget($data, 7), arrget($data, 8)))
+board = map($boardData, {(r) => arrtostr(map($r, {(b) => ifelse(eq($b, -1), ".,.", ifelse($b, "O", "X"))}))})
 
-pi=3.14159265358979323846
-x=sqrt(3)
-y=1
-l=sqrt($x*$x + $y*$y)
-deg=atan2($x, $y)/$pi*180
-rotateDeg=30
-xp=cos($deg + $rotateDeg*$pi/180)*$l
-yp=sin($deg + $rotateDeg*$pi/180)*$l</textarea>
+r1 = arrget($board, 0)
+r2 = arrget($board, 1)
+r3 = arrget($board, 2)
+
+xWin = or( and(eq(arrget($data, 0), 0), eq(arrget($data, 1), 0), eq(arrget($data, 2), 0)), and(eq(arrget($data, 3), 0), eq(arrget($data, 4), 0), eq(arrget($data, 5), 0)), and(eq(arrget($data, 6), 0), eq(arrget($data, 7), 0), eq(arrget($data, 8), 0)), and(eq(arrget($data, 0), 0), eq(arrget($data, 4), 0), eq(arrget($data, 8), 0)), and(eq(arrget($data, 2), 0), eq(arrget($data, 4), 0), eq(arrget($data, 6), 0)) )
+oWin = or( and(eq(arrget($data, 0), 1), eq(arrget($data, 1), 1), eq(arrget($data, 2), 1)), and(eq(arrget($data, 3), 1), eq(arrget($data, 4), 1), eq(arrget($data, 5), 1)), and(eq(arrget($data, 6), 1), eq(arrget($data, 7), 1), eq(arrget($data, 8), 1)), and(eq(arrget($data, 0), 1), eq(arrget($data, 4), 1), eq(arrget($data, 8), 1)), and(eq(arrget($data, 2), 1), eq(arrget($data, 4), 0), eq(arrget($data, 6), 1)) )
+message=ifelse(and($xWin, $oWin), "Draw?", ifelse(not($xWin, $oWin), "In game...", ifelse($xWin, "X win!", "Y win!")))</textarea>
     <div id="example__variable-output">Invaild expression</div>
   </div>  
 </body>
