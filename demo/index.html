@@ -11,7 +11,8 @@
   <div style="background-color: #222; color: #fff;">
     This is the second version of StringExpression.<br>
     The StringExpression parses expression from string!<br>
-    $a to get variable that named a
+    $a to get variable that named a<br>
+    Custom code: {(i) => i*2}
   </div>
   <div id="example">
     <div id="example__function-lookup">*There's no avaiable function...*</div>
@@ -23,6 +24,9 @@ b=$a*4
 c=min($a, $b)*8
 d=string(max(5, 8))+"5"
 
+f = {(i) => $i*2}
+g = $f(2)
+
 pi=3.14159265358979323846
 x=sqrt(3)
 y=1
@@ -32,6 +36,6 @@ rotateDeg=30
 xp=cos($deg + $rotateDeg*$pi/180)*$l
 yp=sin($deg + $rotateDeg*$pi/180)*$l</textarea>
     <div id="example__variable-output">Invaild expression</div>
-  </div>
+  </div>  
 </body>
 </html>

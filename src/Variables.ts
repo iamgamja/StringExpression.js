@@ -1,6 +1,9 @@
+import type StringExpression from "./StringExpression.js";
+
 interface VariableTypes {
   "number": number;
   "string": string;
+  "StringExpression": StringExpression;
 
   "number_arr": number[];
   "string_arr": string[];

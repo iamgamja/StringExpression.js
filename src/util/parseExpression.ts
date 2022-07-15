@@ -1,14 +1,16 @@
 import parseQuotes from "./parseQuotes.js";
 import matchOne from "./matchOne.js";
 
-export type ParsedExpressionChunk = [string, ...(number | string)[]];
-export type ParsedExpression = ParsedExpressionChunk[];
+export type ExpressionChunk = [string, ...(number | string)[]];
+export type ExpressionCode = [variableNames: string[], expressionStr: string];
+export type ParsedExpression = [parsedExpression: ExpressionChunk[], codes: ExpressionCode[]];
 type FunctionData = [name: string, ...params: string[]];
 
 // Lookup
-// #i: ith value                       
-// @i: ith chunk                       
-// Fi: ith funct                   -ion
+// #i: ith value
+// @i: ith chunk
+// Ci: itn code
+// Fi: ith function
 
 // string starts with S
 
@@ -19,6 +21,42 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
   function didLoop() {
     loopLeft--;
     if (loopLeft < 0) throw Error("This expression is too complex.\nChange StringExpression.MAX_LOOP to higher to parse more complex expression.");
+  }
+
+  // Parse expression codes
+  const codes: ExpressionCode[] = [];
+  const codeRegexp = /{(?: )*\(([A-Za-z][A-Za-z0-9]*(?: )*|(?:[A-Za-z][A-Za-z0-9]*(?: )*,(?: )*)+(?:[A-Za-z][A-Za-z0-9]*(?: )*))?\)(?: )*=>(?: )*([^}]+)(?: )*}/;
+  while (true) {
+    didLoop();
+    if (str.match(codeRegexp) === null) break;
+    let bracketsLevel = 0;
+    let beginPos = -1;
+    for (let i = 0; i < str.length; i++) {
+      const char = str[i];
+      if (char === "{") {
+        beginPos = i;
+        bracketsLevel++;
+      } else if (char === "}") {
+        bracketsLevel--;
+        if (bracketsLevel < 0) throw Error(`Invaild brackets pair. (at ${i})`);
+        if (bracketsLevel === 0) {
+          const codeStr = str.slice(beginPos, i+1);
+          const variableNameStr = matchOne(codeStr, codeRegexp, 1);
+          const expressionStr = matchOne(codeStr, codeRegexp, 2);
+          if (
+            typeof variableNameStr === "undefined" ||
+            typeof expressionStr === "undefined"
+          ) throw Error("Unknown parse error. (001)");
+          const variableNames = variableNameStr.replace(/ /g, "").split(",");
+          const prevLoop = loopLeft;
+          const loopUsed = prevLoop - loopLeft;
+          loopLeft -= loopUsed;
+          str = str.replace(codeStr, `C${codes.length}`);
+          codes.push([variableNames, expressionStr]);
+        }
+      }
+    }
+    if (bracketsLevel > 0) throw Error("There is one or more unterminated brackets.");
   }
 
   // Fix -function (-1 * function)
@@ -97,16 +135,17 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
     if (
       typeof idx1 === "undefined" ||
       typeof idx2 === "undefined"
-    ) throw Error("Unknown parse error. (001)");
+    ) throw Error("Unknown parse error. (002)");
     throw Error(`Parse error between '${values[idx1]}' and '${values[idx2]}'.`);
   }
   // remaining strings
-  const invaildTestRegexp2 = /(?<!#[A-Za-z0-9]*)[A-Za-z0-9]+/;
+  const invaildTestRegexp2 = /(?<!#[A-Za-z0-9]*)[A-Za-z0-9]+/g;
   if (invaildTestRegexp2.test(str)) {
-    const invaildGetRegexp = /(?<!#[A-Za-z0-9]*)([A-Za-z0-9]+)/;
-    const match = matchOne(str, invaildGetRegexp, 1);
-    if (typeof match === "undefined") throw Error("Unknown parse error. (002)");
-    throw Error(`Parse error at '${match}'.`);
+    const invaildExceptionRegexp = /C\d+/;
+    const match = str.match(invaildTestRegexp2);
+    if (match === null) throw Error("Unknown parse error. (003)");
+    const filtered = match.filter(m => !invaildExceptionRegexp.test(m));
+    if (filtered.length > 0) throw Error(`Parse error at '${match}'.`);
   }
   // barcat match
   let testBracketsLevel = 0;
@@ -147,11 +186,11 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
           const funcStr = str.slice(beginPos, i+1);
           str = str.replace(funcStr, `F${functions.length}`);
           const funcNameIdx = matchOne(funcStr, functionNameIdxRegexp, 1);
-          if (typeof funcNameIdx === "undefined") throw Error("Unknown parse error. (003)");
+          if (typeof funcNameIdx === "undefined") throw Error("Unknown parse error. (004)");
           const funcName = values[Number(funcNameIdx)];
-          if (typeof funcName === "number") throw Error("Unknown parse error. (004)");
+          if (typeof funcName === "number") throw Error("Unknown parse error. (005)");
           const params = matchOne(funcStr, functionParamsRegexp, 1);
-          if (typeof params === "undefined") throw Error("Unknown parse error. (005)");
+          if (typeof params === "undefined") throw Error("Unknown parse error. (006)");
           const splitedParams = params.split(",");
           functions.push([funcName, ...splitedParams]);
           continue funcLoop;
@@ -162,14 +201,14 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
   }
 
   // Parse expression
-  const parsed: ParsedExpression = [];
+  const parsed: ExpressionChunk[] = [];
   const operatorPriorities = [
     ["^"],
     ["*", "/"],
     ["+", "-"],
     ["%"]
   ];
-  const operatorRegexps: RegExp[] = operatorPriorities.map(ops => new RegExp(`((?:#|@|F)\\d+)(${ops.map(op => "\\" + op).join("|")})((?:#|@|F)\\d+)`));
+  const operatorRegexps: RegExp[] = operatorPriorities.map(ops => new RegExp(`((?:#|@|F|C)\\d+)(${ops.map(op => "\\" + op).join("|")})((?:#|@|F|C)\\d+)`));
   const parseEndRegexp = /^@\d+$/;
   const invaildTestRegexp3 = new RegExp(`(?:${operatorPriorities.flat().map(op => `\\${op}`).join("|")})$`);
   parseExpression(str);
@@ -220,7 +259,7 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
           typeof operator === "undefined" ||
           typeof val1point === "undefined" ||
           typeof val2point === "undefined"
-        ) throw Error("Unknown parse error. (006)");
+        ) throw Error("Unknown parse error. (007)");
         const vals = [
           val1point.startsWith("#") ? values[Number(val1point.slice(1))] : val1point,
           val2point.startsWith("#") ? values[Number(val2point.slice(1))] : val2point
@@ -263,5 +302,5 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
     return parsed.length - 1;
   }
 
-  return parsed;
+  return [parsed, codes];
 }

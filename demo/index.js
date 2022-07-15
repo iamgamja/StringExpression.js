@@ -20,11 +20,26 @@ varInput.addEventListener("keypress", updateValOutput);
 updateExprOutput();
 updateValOutput();
 
+/**
+ * @param {any} expression 
+ */
+function visualParsedExpression(expression) {
+  return expression.map((chunk, i) => `@${i} -> [${chunk.map(part => typeof part === "string" ? `'${part}'` : part).join(", ")}]`).join(",\n");
+}
+
 function updateExprOutput() {
   const strExpr = new StringExpression(exprInput.value);
   const expression = strExpr.parsedExpression;
   if (typeof expression !== "undefined") {
-    const outputStr = expression.map((chunk, i) => `@${i} -> [${chunk.map(part => typeof part === "string" ? `'${part}'` : part).join(", ")}]`).join(",\n");
+    let outputStr = "";
+    outputStr += visualParsedExpression(expression);
+    if (strExpr.codes) {
+      for (let i = 0; i < strExpr.codes.length; i++) {
+        if (typeof strExpr.codes[i].parsedExpression === "undefined") continue;
+        outputStr += `\n---------- C${i} ----------\n`;
+        outputStr += visualParsedExpression(strExpr.codes[i].parsedExpression);
+      }
+    }
     exprOutput.innerText = outputStr;
   } else {
     exprOutput.innerText = strExpr.parseError;
@@ -36,7 +51,8 @@ function updateValOutput() {
   try {
     const result = parseStringVariables(varInput.value, "\n");
     for (const [name, value] of result.entries()) {
-      outputStr += `${name}: ${value}\n`;
+      let valueStr = typeof value !== "object" ? value : `(${((value ?? {}).argNames ?? []).join(", ")}) => ${(value ?? {}).rawExpression}`;
+      outputStr += `${name}: ${valueStr}\n`;
     }
     outputStr = outputStr.trim();
   } catch (e) {
