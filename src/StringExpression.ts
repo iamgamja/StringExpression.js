@@ -1,6 +1,6 @@
 import parseStringExpression, { ExpressionChunk } from "./util/parseExpression.js";
 import * as Funcs from "./data/functions.js";
-import type Variables from "./Variables";
+import Variables from "./Variables.js";
 
 // const funcNames = Funcs.getAllFuncName();
 const calcFunc = Funcs.calcFunc;
@@ -51,16 +51,17 @@ export default class StringExpression {
   static MAX_LOOP = 1000;
 
   eval(args?: (string | number)[], variables?: Variables<any>) {
-    console.log(this);  
     if (
       !this.isVaild ||
       typeof this.parsedExpression === "undefined"
     ) throw Error("This expression is invaild.\nCheck this.parseError to see error message.");
 
     if (args) {
+      if (!variables) variables = new Variables("number", "string", "StringExpression");
       for (let i = 0; i < args.length; i++) {
         const argName = this.argNames[i];
-        variables?.set(argName, args[i]);
+        console.log(argName, args[i]);
+        variables.set(argName, args[i]);
       }
     }
 

@@ -51,7 +51,7 @@ function updateValOutput() {
   try {
     const result = parseStringVariables(varInput.value, "\n");
     for (const [name, value] of result.entries()) {
-      let valueStr = typeof value !== "object" ? value : `(${((value ?? {}).argNames ?? []).join(", ")}) => ${(value ?? {}).rawExpression}`;
+      let valueStr = Array.isArray(value) ? `[${value.join(", ")}]` : typeof value !== "object" ? value : `(${((value ?? {}).argNames ?? []).join(", ")}) => ${(value ?? {}).rawExpression}`;
       outputStr += `${name}: ${valueStr}\n`;
     }
     outputStr = outputStr.trim();

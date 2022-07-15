@@ -1,5 +1,6 @@
 import parseStringExpression from "./util/parseExpression.js";
 import * as Funcs from "./data/functions.js";
+import Variables from "./Variables.js";
 // const funcNames = Funcs.getAllFuncName();
 const calcFunc = Funcs.calcFunc;
 export default class StringExpression {
@@ -39,14 +40,16 @@ export default class StringExpression {
         // }
     }
     eval(args, variables) {
-        console.log(this);
         if (!this.isVaild ||
             typeof this.parsedExpression === "undefined")
             throw Error("This expression is invaild.\nCheck this.parseError to see error message.");
         if (args) {
+            if (!variables)
+                variables = new Variables("number", "string", "StringExpression");
             for (let i = 0; i < args.length; i++) {
                 const argName = this.argNames[i];
-                variables?.set(argName, args[i]);
+                console.log(argName, args[i]);
+                variables.set(argName, args[i]);
             }
         }
         const results = [];

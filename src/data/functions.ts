@@ -1,3 +1,5 @@
+import type StringExpression from "../StringExpression.js";
+
 // type AvaiableTypes = number | string | number[] | string[];
 type Func = (...args: any[]) => any;
 const funcs: Map<string, [func: Func, argsCount: number]> = new Map();
@@ -74,6 +76,7 @@ addFunc("ifelse", (s, a, b) => s ? a : b);
 // array
 addFunc("arr", (...args) => args);
 addFunc("arrget", (arr, i) => typeof arr !== "undefined" || arr !== null ? arr[i] : undefined);
+addFunc("map", (arr: any[], callback: StringExpression) => arr.map((v, i) => callback.eval([v, i])));
 // string
 addFunc("strtoarr", (str) => str.split(""));
 addFunc("arrtostr", (arr) => Array.isArray(arr) ? arr.join("") : "")
