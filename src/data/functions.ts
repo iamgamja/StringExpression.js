@@ -54,7 +54,7 @@ addFunc("sum", (...args) => {
   if (args.length === 1 && Array.isArray(args[0])) {
     args = args[0];
   }
-  args.reduce((a, b) => a + b, typeof args[0] === "string" ? "" : 0)
+  return args.reduce((a, b) => a + b, typeof args[0] === "string" ? "" : 0)
 });
 // type changers
 addFunc("number", (v) => Number(v));
