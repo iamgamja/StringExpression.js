@@ -48,7 +48,6 @@ export default class StringExpression {
                 variables = new Variables("number", "string", "StringExpression");
             for (let i = 0; i < args.length; i++) {
                 const argName = this.argNames[i];
-                console.log(argName, args[i]);
                 variables.set(argName, args[i]);
             }
         }

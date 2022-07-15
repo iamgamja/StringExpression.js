@@ -74,6 +74,7 @@ addFunc("ifelse", (s, a, b) => s ? a : b);
 addFunc("arr", (...args) => args);
 addFunc("arrget", (arr, i) => typeof arr !== "undefined" || arr !== null ? arr[i] : undefined);
 addFunc("map", (arr, callback) => arr.map((v, i) => callback.eval([v, i])));
+addFunc("reduce", (arr, callback, initialValue) => arr.reduce((a, b, i) => callback.eval([a, b, i]), initialValue));
 // string
 addFunc("strtoarr", (str) => str.split(""));
 addFunc("arrtostr", (arr) => Array.isArray(arr) ? arr.join("") : "");
