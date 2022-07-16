@@ -93,7 +93,6 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
   while (true) {
     const match = matchOne(str, numberRegexp);
     if (typeof match === "undefined") break;
-    console.log(match, str);
     str = str.replace(numberRegexp, `#${values.length}`);
     values.push(Number(match));
     didLoop();
@@ -215,7 +214,6 @@ export default function parseStringExpression(str: string, maxLoop: number=1000)
   const parseEndRegexp = /^@\d+$/;
   const invaildTestRegexp3 = new RegExp(`(?:${operatorPriorities.flat().map(op => `\\${op}`).join("|")})$`);
   const minusFixCheckRegexp = /-#\d+/;
-  console.log(str);
   parseExpression(str);
   function parseExpression(str: string): number {
     if (invaildTestRegexp3.test(str)) throw Error(`Syntax error (at '${str.slice(-1)}')`);
