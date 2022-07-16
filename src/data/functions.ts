@@ -36,6 +36,7 @@ addFunc("*", (a, b) => a * b);
 addFunc("/", (a, b) => a / b);
 addFunc("^", (a, b) => a ** b);
 // math functions
+addFunc("minus", (x) => -x);
 addFunc("min", (a, b) => Math.min(a, b));
 addFunc("max", (a, b) => Math.max(a, b));
 addFunc("sqrt", (a) => Math.sqrt(a));

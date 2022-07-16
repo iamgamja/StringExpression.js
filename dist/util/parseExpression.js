@@ -39,7 +39,7 @@ export default function parseStringExpression(str, maxLoop = 1000) {
                     throw Error(`Invaild brackets pair. (at ${i})`);
                 if (bracketsLevel === 0) {
                     const codeStr = str.slice(beginPos, i + 1);
-                    const variableNameStr = matchOne(codeStr, codeGetRegexp, 1);
+                    const variableNameStr = matchOne(codeStr, codeGetRegexp, 1) ?? "";
                     const expressionStr = matchOne(codeStr, codeGetRegexp, 2);
                     if (typeof variableNameStr === "undefined" ||
                         typeof expressionStr === "undefined")
@@ -84,12 +84,13 @@ export default function parseStringExpression(str, maxLoop = 1000) {
         didLoop();
     }
     // numbers
-    const numberRegexp = /(?<!(?:\$|#|[A-Za-z])\d*)-?\d+(?:\.\d+)?(?:e\d+)?(?!\d*(?:\(|[A-Za-z]))/;
+    const numberRegexp = /(?<!(?:\$|#|[A-Za-z])\d*)\d+(?:\.\d+)?(?:e\d+)?(?!\d*(?:\(|[A-Za-z]))/;
     while (true) {
         const match = matchOne(str, numberRegexp);
         if (typeof match === "undefined")
             break;
-        str = str.replace(numberRegexp, (match.startsWith("-") ? "+" : "") + `#${values.length}`);
+        console.log(match, str);
+        str = str.replace(numberRegexp, `#${values.length}`);
         values.push(Number(match));
         didLoop();
     }
@@ -218,6 +219,7 @@ export default function parseStringExpression(str, maxLoop = 1000) {
     const operatorRegexps = operatorPriorities.map(ops => new RegExp(`((?:#|@|F|C)\\d+)(${ops.map(op => "\\" + op).join("|")})((?:#|@|F|C)\\d+)`));
     const parseEndRegexp = /^@\d+$/;
     const invaildTestRegexp3 = new RegExp(`(?:${operatorPriorities.flat().map(op => `\\${op}`).join("|")})$`);
+    const minusFixCheckRegexp = /-#\d+/;
     console.log(str);
     parseExpression(str);
     function parseExpression(str) {
@@ -282,7 +284,12 @@ export default function parseStringExpression(str, maxLoop = 1000) {
             }
             if (!didParse) {
                 const val = part.startsWith("#") ? values[Number(part.slice(1))] : part;
-                parseOperator("val", val);
+                if (typeof val === "string" && minusFixCheckRegexp.test(val)) {
+                    parseOperator("minus", values[Number(val.slice(2))]);
+                }
+                else {
+                    parseOperator("val", val);
+                }
                 part = part.replace(part, ``);
             }
             didLoop();
