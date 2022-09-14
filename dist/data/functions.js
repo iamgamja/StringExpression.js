@@ -101,8 +101,6 @@ addFunc("D", (x) => new Decimal(x));
 addFunc("Decimal", (x) => new Decimal(x));
 addFunc("Dmethod", (key, ...params) => {
     const method = Decimal[key];
-    console.log(key, ...params);
-    console.log(method);
     if (!isFunction(method)) {
         return method;
     }
