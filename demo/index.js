@@ -1,4 +1,5 @@
 // @ts-check
+import Decimal from "../lib/Decimal.js";
 import StringExpression from "../dist/StringExpression.js";
 import parseStringVariables from "../dist/util/parseStringVariables.js";
 import { getAllFuncName } from "../dist/data/functions.js";
@@ -51,7 +52,7 @@ function updateValOutput() {
   try {
     const result = parseStringVariables(varInput.value, "\n");
     for (const [name, value] of result.entries()) {
-      let valueStr = Array.isArray(value) ? `[${value.join(", ")}]` : typeof value !== "object" ? value : `(${((value ?? {}).argNames ?? []).join(", ")}) => ${(value ?? {}).rawExpression}`;
+      let valueStr = Array.isArray(value) ? `[${value.join(", ")}]` : typeof value !== "object" || value instanceof Decimal ? value : `(${((value ?? {}).argNames ?? []).join(", ")}) => ${(value ?? {}).rawExpression}`;
       outputStr += `${name}: ${valueStr}\n`;
     }
     outputStr = outputStr.trim();
