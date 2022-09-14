@@ -61,7 +61,6 @@ addFunc("sum", (...args) => {
 // type changers
 addFunc("number", (v) => Number(v));
 addFunc("string", (v) => String(v));
-addFunc("bigint", (v) => BigInt(v));
 // compare
 addFunc("eq", (a, b) => a === b);
 addFunc("gt", (a, b) => a > b);
