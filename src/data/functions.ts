@@ -70,8 +70,8 @@ addFunc("lt", (a, b) => a < b);
 addFunc("gte", (a, b) => a >= b);
 addFunc("lte", (a, b) => a <= b);
 // bool
-addFunc("and", (...v) => v.every(v => v == true));
-addFunc("or", (...v) => !!v.find(v => v == true));
+addFunc("and", (...v) => v.every(v => v));
+addFunc("or", (...v) => v.some(v => v));
 addFunc("not", (a) => !a);
 addFunc("xor", (a, b) => a^b);
 // if
